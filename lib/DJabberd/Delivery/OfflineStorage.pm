@@ -7,13 +7,14 @@ use DJabberd::Queue::ServerOut;
 use DJabberd::Log;
 our $logger = DJabberd::Log->get_logger;
 use Storable qw(nfreeze thaw);
+use POSIX qw(strftime);
 
 use vars qw($VERSION);
 $VERSION = '0.04';
 
 =head1 NAME
 
-DJabberd::Delivery::OfflineStorage - Basic OfflineStorage (old style) for DJabberd
+DJabberd::Delivery::OfflineStorage - Basic OfflineStorage (XEP-0203) for DJabberd
 
 =head1 DESCRIPTION
 
@@ -114,6 +115,8 @@ sub deliver {
     return $cb->declined
       unless exists $self->{types}->{$stanza->element_name};
 
+    my $delay = DJabberd::XMLElement->new('',"delay",{xmlns=>"urn:xmpp:delay",from=>$vhost->name,stamp=>strftime("%Y-%m-%dT%H:%M:%SZ",gmtime)},["Offline delivery"]);
+    $stanza->push_child($delay);
     my $packet = { 'type'    => ref($stanza),
                    'element' => $stanza->element_name,
                    'stanza'  => $stanza->innards_as_xml,
@@ -126,6 +129,7 @@ sub deliver {
     $DJabberd::Stats::counter{deliver_to_offline_storage}++;
 
     $cb->delivered;
+    $logger->debug("Stashing stanza ".$stanza->as_xml);
 }
 
 =head1 COPYRIGHT & LICENSE
