@@ -12,3 +12,8 @@ Error example for reference -
 26238 INFO  DJabberd.Delivery.OfflineStorage.InMemoryOnly InMemoryOnly                                   
 OfflineStorage load for: a@test.com                                                                      
   ... ERROR: [Can't call method "downbless" on an undefined value at  
+
+0.05 Mon Dec  5 21:51:28 CET 2016
+Added Presence stanza support
+Added formal compliance with XEP-0203 (delay element)
+Added formal compliance with XEP-0160 (disco#info and message filter)
