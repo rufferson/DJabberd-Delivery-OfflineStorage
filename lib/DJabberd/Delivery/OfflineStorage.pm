@@ -78,6 +78,7 @@ sub register {
   my ($self, $vhost) = @_;
   $self->set_vhost($vhost);
   $vhost->register_hook("OnInitialPresence", sub { $self->on_initial_presence(@_) });
+  $vhost->add_feature('msgoffline');
   $self->SUPER::register($vhost);
 }
 
