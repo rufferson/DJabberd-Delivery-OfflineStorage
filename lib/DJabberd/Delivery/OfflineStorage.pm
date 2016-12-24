@@ -111,9 +111,15 @@ sub deliver {
     my $to = $stanza->to_jid
         or return $cb->declined;
 
-   # only configured packet types
+    # only configured packet types
     return $cb->declined
       unless exists $self->{types}->{$stanza->element_name};
+
+    # additional filtering on message stanzas - only normal chats
+    if($stanza->element_name eq 'message' and $stanza->attr('{}type')) {
+        return $cb->declined unless($stanza->attr('{}type') eq 'normal' or
+                ($stanza->attr('{}type') eq 'chat' and grep{$_->element_name eq 'body'}$stanza->children_elements));
+    }
 
     my $delay = DJabberd::XMLElement->new('',"delay",{xmlns=>"urn:xmpp:delay",from=>$vhost->name,stamp=>strftime("%Y-%m-%dT%H:%M:%SZ",gmtime)},["Offline delivery"]);
     $stanza->push_child($delay);
