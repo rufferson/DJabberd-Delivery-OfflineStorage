@@ -20,13 +20,13 @@ Whats it for?
 ============
 
 DJabberd::Delivery::OfflineStorage::(InMemory|SQLite) - is a simple Offline Storage
-mechanism for DJabberd.  This handles offline storage of messages in the old style
-prior to XEP-0013 and XEP-0160. 
+mechanism for DJabberd.  This handles offline storage of messages in accordance to
+XEP-0203 and XEP-0160.
 
 If a user is offline, configured packets (should really only be Message type but
 you could add IQ - really think about that though), then this plugin picks up
-the packets at the end of the delivery chain and stores them.  When the user next
-annouces their presence, offline storage is checked, and any stored messages are 
+the packets at the end of the delivery chain and stores them. When the user next
+annouces their presence, offline storage is checked, and any stored messages are
 flooded through.
 
 
@@ -67,7 +67,7 @@ So you want offline storage - well add this to djabberd.conf:
 
 Parameter Database specifies the sqlite database file to use, and Types is a list of Stanza
 types that will be collected.  This should really only be Message - think really hard before
-you ad IQ to the list.
+you add IQ to the list.
 
 Also - it is extremely IMPORTANT as Edward Rudd pointed out - this Plugin MUST be the last
 in the delivery chain, as it assumes that if S2S and Local haven't dealt with it, then the
