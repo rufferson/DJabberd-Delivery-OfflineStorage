@@ -58,8 +58,9 @@ Piers Harding, piers@cpan.org.
 
 
 
-sub run_after { ("DJabberd::Delivery::Local") }
+sub run_after { qw(DJabberd::Delivery::Local DJabberd::Delivery::S2S) }
 
+sub package { __PACKAGE__ }
 
 sub set_config_types {
     my ($self, $types) = @_;
