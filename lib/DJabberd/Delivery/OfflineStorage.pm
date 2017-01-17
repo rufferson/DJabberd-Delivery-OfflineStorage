@@ -103,6 +103,23 @@ sub on_initial_presence {
     }
 }
 
+# Add XEP-203 delayed tag
+sub delay {
+    my ($time, $from, $text) = @_;
+    my @text = ("$text") if($text);
+    my %atts = (
+	'{}xmlns' => "urn:xmpp:delay",
+	'{urn:xmpp:delay}stamp' => strftime("%Y-%m-%dT%H:%M:%SZ",gmtime($time))
+    );
+    $atts{'{urn:xmpp:delay}from'} = $from if($from);
+    return DJabberd::XMLElement->new('',"delay",\%atts,\@text);
+}
+sub add_delay {
+    my ($stanza, $from, $text) = @_;
+    $from = $stanza->connection->vhost->name if(!$from && $stanza->connection && $stanza->connection->vhost);
+    my $delay = delay(time, $from, $text);
+    $stanza->push_child($delay);
+}
 
 # hit the end of the delivery chain and we know that the user
 # cannot accept the message -> store it offline for later
@@ -123,8 +140,7 @@ sub deliver {
                 ($stanza->attr('{}type') eq 'chat' and grep{$_->element_name eq 'body'}$stanza->children_elements));
     }
 
-    my $delay = DJabberd::XMLElement->new('',"delay",{xmlns=>"urn:xmpp:delay",from=>$vhost->name,stamp=>strftime("%Y-%m-%dT%H:%M:%SZ",gmtime)},["Offline delivery"]);
-    $stanza->push_child($delay);
+    add_delay($stanza,$vhost->name,"Offline delivery");
     my $packet = { 'type'    => ref($stanza),
                    'element' => $stanza->element_name,
                    'stanza'  => $stanza->innards_as_xml,
